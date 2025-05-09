@@ -1,0 +1,8 @@
+## Interface: 100105
+## Title: WowDpsGirl
+## Author: Matthew Carter
+## Version: 0.0.1
+## Notes: Show current dps with a friend.
+## SavedVariables: WDG_SavedConfig
+
+WowDpsGirl.lua
