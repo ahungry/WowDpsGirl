@@ -1,6 +1,6 @@
 local WDGConfig = {
    xOffset = -280,
-   yOffset = 0,
+   yOffset = 178,
    inactivityTime = 6,
    path = {
       bubble = "Interface\\AddOns\\WowDpsGirl\\bubble.tga",
@@ -67,7 +67,7 @@ local function getDps()
       return string.format("%.0f", dps/1000).."k"
    end
 
-   return tostring(dps)
+   return string.format("%.0f", dps)
 end
 
 local currentImage = 1
@@ -109,7 +109,7 @@ function showGirl()
    -- bubble
    local myImageFrame2 = CreateFrame("Frame", nil, UIParent)
    myImageFrame2:SetSize(150, 130)
-   myImageFrame2:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -100 + c.xOffset, 190 + c.yOffset) -- Example positioning
+   myImageFrame2:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -30 + c.xOffset, 65 + c.yOffset) -- Example positioning
 
    local myImageTexture2 = myImageFrame2:CreateTexture(nil, "ARTWORK")
    myImageTexture2:SetAllPoints(myImageFrame2)
@@ -119,7 +119,8 @@ function showGirl()
 
    -- girl
    local myImageFrame1 = CreateFrame("Frame", nil, UIParent)
-   myImageFrame1:SetSize(220, 241)
+   -- myImageFrame1:SetSize(220, 241)
+   myImageFrame1:SetSize(110, 120)
    myImageFrame1:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", c.xOffset, c.yOffset) -- Example positioning
 
    local myImageTexture1 = myImageFrame1:CreateTexture(nil, "ARTWORK")
@@ -130,7 +131,7 @@ function showGirl()
    -- text
    local f = CreateFrame("Frame", nil, UIParent)
    f:SetSize(50, 30)
-   f:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -160 + c.xOffset, 240 + c.yOffset)
+   f:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -80 + c.xOffset, 120 + c.yOffset)
 
    local fs = f:CreateFontString(nil, "OVERLAY")
    fs:SetFont("Fonts\\ARIALN.TTF", 32, nil) -- OUTLINE third arg if wanted
@@ -216,6 +217,8 @@ WDGFrame:SetScript(
             incStats("heal", amount)
          elseif tonumber(amount) and amount > 0 then
             incStats("dmg", amount)
+         elseif subEvent == "SWING_DAMAGE" and amount == nil and spellID and spellID > 0 then
+            incStats("dmg", spellID)
          end
       end
    end
