@@ -1,7 +1,7 @@
 local WDGConfig = {
-   scale = 1,
-   xOffset = -280,
-   yOffset = 178,
+   scale = 1.5,
+   xOffset = -200,
+   yOffset = 0,
    inactivityTime = 6,
    path = {
       bubble = "Interface\\AddOns\\WowDpsGirl\\bubble.tga",
@@ -297,6 +297,13 @@ local commands = setmetatable(
          saveConfig()
       end,
 
+      ["p"] = function(arg)
+         print("Printing settings:")
+         print("Scale: "..WDGConfig.scale)
+         print("xOffset: "..WDGConfig.xOffset)
+         print("yOffset: "..WDGConfig.yOffset)
+      end,
+
       ["r"] = function(arg)
          print("Resetting customizations")
          WDGConfig.scale = 1
@@ -333,6 +340,7 @@ local commands = setmetatable(
             log("  |cffff66cc/dg ax|cffffffff - Adjust X")
             log("  |cffff66cc/dg ay|cffffffff - Adjust Y")
             log("  |cffff66cc/dg s|cffffffff - Set scale")
+            log("  |cffff66cc/dg p|cffffffff - Print settings")
             log("  |cffff66cc/dg r|cffffffff - Reset settings")
          end
       end
