@@ -1,4 +1,5 @@
 local WDGConfig = {
+   scale = 1,
    xOffset = -280,
    yOffset = 178,
    inactivityTime = 6,
@@ -8,7 +9,8 @@ local WDGConfig = {
       girl2 = "Interface\\AddOns\\WowDpsGirl\\girl2.tga",
       girlz = "Interface\\AddOns\\WowDpsGirl\\girlz.tga",
       girlb = "Interface\\AddOns\\WowDpsGirl\\girlb.tga",
-   }
+   },
+   needsUpdate = false,
 }
 
 WDG_SavedConfig = WDG_SavedConfig or {}
@@ -108,8 +110,8 @@ function showGirl()
 
    -- bubble
    local myImageFrame2 = CreateFrame("Frame", nil, UIParent)
-   myImageFrame2:SetSize(150, 130)
-   myImageFrame2:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -30 + c.xOffset, 65 + c.yOffset) -- Example positioning
+   myImageFrame2:SetSize(c.scale * 150, c.scale * 130)
+   myImageFrame2:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", (-30 + c.xOffset) * c.scale, (65 + c.yOffset) * c.scale) -- Example positioning
 
    local myImageTexture2 = myImageFrame2:CreateTexture(nil, "ARTWORK")
    myImageTexture2:SetAllPoints(myImageFrame2)
@@ -120,8 +122,8 @@ function showGirl()
    -- girl
    local myImageFrame1 = CreateFrame("Frame", nil, UIParent)
    -- myImageFrame1:SetSize(220, 241)
-   myImageFrame1:SetSize(110, 120)
-   myImageFrame1:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", c.xOffset, c.yOffset) -- Example positioning
+   myImageFrame1:SetSize(c.scale * 110, c.scale * 120)
+   myImageFrame1:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", c.scale * c.xOffset, c.scale * c.yOffset) -- Example positioning
 
    local myImageTexture1 = myImageFrame1:CreateTexture(nil, "ARTWORK")
    myImageTexture1:SetAllPoints(myImageFrame1)
@@ -131,7 +133,7 @@ function showGirl()
    -- text
    local f = CreateFrame("Frame", nil, UIParent)
    f:SetSize(50, 30)
-   f:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -80 + c.xOffset, 120 + c.yOffset)
+   f:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", (-80 + c.xOffset) * c.scale, (120 + c.yOffset) * c.scale)
 
    local fs = f:CreateFontString(nil, "OVERLAY")
    fs:SetFont("Fonts\\ARIALN.TTF", 32, nil) -- OUTLINE third arg if wanted
@@ -143,6 +145,16 @@ function showGirl()
    local function updateImage()
       local texture = getTexture()
       local dps = getDps()
+
+      if (c.needsUpdate) then
+         myImageFrame2:SetSize(c.scale * 150, c.scale * 130)
+         myImageFrame1:SetSize(c.scale * 110, c.scale * 120)
+         myImageFrame2:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", (-30 + c.xOffset) * c.scale, (65 + c.yOffset) * c.scale) -- Example positioning
+         myImageFrame1:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", c.scale * c.xOffset, c.scale * c.yOffset) -- Example positioning
+         f:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", (-80 + c.xOffset) * c.scale, (120 + c.yOffset) * c.scale)
+         c.needsUpdate = false
+      end
+
       myImageFrame2:Hide()
       myImageFrame1:Hide()
       myImageTexture1:SetTexture(texture)
@@ -160,6 +172,20 @@ function showGirl()
    local timer = C_Timer.NewTicker(0.1, updateImage) -- true makes it repeat
 end
 
+local function loadConfig ()
+   mode = WDG_SavedConfig.mode
+   WDGConfig.xOffset = WDG_SavedConfig.xOffset
+   WDGConfig.yOffset = WDG_SavedConfig.yOffset
+   WDGConfig.scale = WDG_SavedConfig.scale
+end
+
+local function saveConfig ()
+   WDG_SavedConfig.mode = mode
+   WDG_SavedConfig.xOffset = WDGConfig.xOffset
+   WDG_SavedConfig.yOffset = WDGConfig.yOffset
+   WDG_SavedConfig.scale = WDGConfig.scale
+end
+
 -- Events
 WDGFrame:RegisterEvent("ADDON_LOADED")
 WDGFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
@@ -173,15 +199,19 @@ WDGFrame:SetScript(
          local addonName = ...
          if addonName == "WowDpsGirl" then
             mode = WDG_SavedConfig.mode or "dmg"
+            -- WDG_SavedConfig.xOffset = WDGConfig.xOffset
+            -- WDG_SavedConfig.yOffset = WDGConfig.yOffset
+            -- WDG_SavedConfig.scale = WDGConfig.scale
          end
 
       elseif event == "PLAYER_ENTERING_WORLD" then
          myGUID = UnitGUID("player")
          resetStats()
+         loadConfig()
          showGirl()
 
       elseif event == "PLAYER_LOGOUT" then
-         WDG_SavedConfig.mode = mode
+         saveConfig()
 
       elseif event == "COMBAT_LOG_EVENT_UNFILTERED" then
          local timestamp,
@@ -232,6 +262,50 @@ end
 
 local commands = setmetatable(
    {
+      ["ax"] = function(arg)
+         print("Adjusting x")
+         WDGConfig.xOffset = WDGConfig.xOffset + arg
+         WDGConfig.needsUpdate = true
+         saveConfig()
+      end,
+
+      ["ay"] = function(arg)
+         print("Adjusting y")
+         WDGConfig.yOffset = WDGConfig.yOffset + arg
+         WDGConfig.needsUpdate = true
+         saveConfig()
+      end,
+
+      ["x"] = function(arg)
+         print("Setting x")
+         WDGConfig.xOffset = arg
+         WDGConfig.needsUpdate = true
+         saveConfig()
+      end,
+
+      ["y"] = function(arg)
+         print("Setting y")
+         WDGConfig.yOffset = arg
+         WDGConfig.needsUpdate = true
+         saveConfig()
+      end,
+
+      ["s"] = function(arg)
+         print("Setting scale")
+         WDGConfig.scale = arg
+         WDGConfig.needsUpdate = true
+         saveConfig()
+      end,
+
+      ["r"] = function(arg)
+         print("Resetting customizations")
+         WDGConfig.scale = 1
+         WDGConfig.xOffset = -280
+         WDGConfig.yOffset = 178
+         WDGConfig.needsUpdate = true
+         saveConfig()
+      end,
+
       ["d"] = function(args)
          print("Enabling damage mode")
          mode = "dmg"
@@ -254,6 +328,12 @@ local commands = setmetatable(
             log("Commands:")
             log("  |cffff66cc/dg d|cffffffff - Enable damage mode"..dmgChosen)
             log("  |cffff66cc/dg h|cffffffff - Enable heal mode"..healChosen)
+            log("  |cffff66cc/dg x|cffffffff - Set X")
+            log("  |cffff66cc/dg y|cffffffff - Set Y")
+            log("  |cffff66cc/dg ax|cffffffff - Adjust X")
+            log("  |cffff66cc/dg ay|cffffffff - Adjust Y")
+            log("  |cffff66cc/dg s|cffffffff - Set scale")
+            log("  |cffff66cc/dg r|cffffffff - Reset settings")
          end
       end
 })
