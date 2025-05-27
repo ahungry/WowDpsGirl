@@ -173,10 +173,10 @@ function showGirl()
 end
 
 local function loadConfig ()
-   mode = WDG_SavedConfig.mode
-   WDGConfig.xOffset = WDG_SavedConfig.xOffset
-   WDGConfig.yOffset = WDG_SavedConfig.yOffset
-   WDGConfig.scale = WDG_SavedConfig.scale
+   mode = WDG_SavedConfig.mode or "dmg"
+   WDGConfig.xOffset = WDG_SavedConfig.xOffset or -200
+   WDGConfig.yOffset = WDG_SavedConfig.yOffset or 0
+   WDGConfig.scale = WDG_SavedConfig.scale or 1.5
 end
 
 local function saveConfig ()
@@ -306,9 +306,9 @@ local commands = setmetatable(
 
       ["r"] = function(arg)
          print("Resetting customizations")
-         WDGConfig.scale = 1
-         WDGConfig.xOffset = -280
-         WDGConfig.yOffset = 178
+         WDGConfig.scale = 1.5
+         WDGConfig.xOffset = -200
+         WDGConfig.yOffset = 0
          WDGConfig.needsUpdate = true
          saveConfig()
       end,
